@@ -4,7 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz App</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #quiz-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        #name-input-section input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #name-input-section button, #section-selection button, #navigation button, #choose-another-section {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #submit-btn {
+            background-color: #28a745;
+        }
+        #progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin: 20px 0;
+            height: 10px;
+            width: 100%;
+        }
+        #progress {
+            background-color: #28a745;
+            height: 100%;
+            width: 0;
+            border-radius: 5px;
+        }
+        #question-container {
+            margin: 20px 0;
+        }
+        #options button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #result-section {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div id="quiz-container">
@@ -49,6 +116,145 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        const quizData = {
+            beginner: [
+                { question: "What is the capital of Nigeria?", options: ["Lagos", "Abuja", "Kano", "Port Harcourt"], answer: "b" },
+                { question: "Who is the current president of Nigeria (as of 2023)?", options: ["Muhammadu Buhari", "Bola Tinubu", "Atiku Abubakar", "Peter Obi"], answer: "b" },
+            ],
+            intermediate: [
+                { question: "Which Nigerian city is known as the 'Centre of Excellence'?", options: ["Lagos", "Abuja", "Ibadan", "Enugu"], answer: "a" },
+                { question: "What year did Nigeria gain independence?", options: ["1960", "1963", "1970", "1957"], answer: "a" },
+            ],
+            advanced: [
+                { question: "Which Nigerian won the Nobel Prize in Literature?", options: ["Chinua Achebe", "Wole Soyinka", "Chimamanda Adichie", "Ben Okri"], answer: "b" },
+                { question: "What is the name of Nigeria's central bank?", options: ["First Bank", "Central Bank of Nigeria", "Union Bank", "Zenith Bank"], answer: "b" },
+            ]
+        };
+
+        let currentSection = '';
+        let currentQuestionIndex = 0;
+        let userAnswers = { beginner: [], intermediate: [], advanced: [] };
+        let userName = '';
+
+        document.getElementById('start-quiz').addEventListener('click', function() {
+            userName = document.getElementById('name-input').value;
+            if (userName) {
+                document.getElementById('name-input-section').style.display = 'none';
+                document.getElementById('section-selection').style.display = 'block';
+            } else {
+                alert('Please enter your name.');
+            }
+        });
+
+        document.getElementById('beginner-btn').addEventListener('click', function() {
+            currentSection = 'beginner';
+            startQuiz();
+        });
+
+        document.getElementById('intermediate-btn').addEventListener('click', function() {
+            currentSection = 'intermediate';
+            startQuiz();
+        });
+
+        document.getElementById('advanced-btn').addEventListener('click', function() {
+            currentSection = 'advanced';
+            startQuiz();
+        });
+
+        document.getElementById('next-btn').addEventListener('click', function() {
+            if (currentQuestionIndex < quizData[currentSection].length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        });
+
+        document.getElementById('prev-btn').addEventListener('click', function() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        });
+
+        document.getElementById('submit-btn').addEventListener('click', function() {
+            showResults();
+        });
+
+        document.getElementById('choose-another-section').addEventListener('click', function() {
+            document.getElementById('result-section').style.display = 'none';
+            document.getElementById('section-selection').style.display = 'block';
+        });
+
+        function startQuiz() {
+            document.getElementById('section-selection').style.display = 'none';
+            document.getElementById('quiz-section').style.display = 'block';
+            currentQuestionIndex = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const questionData = quizData[currentSection][currentQuestionIndex];
+            document.getElementById('section-title').innerText = currentSection.toUpperCase();
+            document.getElementById('question').innerText = questionData.question;
+            const options = document.querySelectorAll('.option');
+            options.forEach(function(option, index) {
+                option.innerText = questionData.options[index];
+                option.onclick = function() { selectOption(option); };
+                option.style.backgroundColor = '#f8f9fa';
+                option.style.color = 'black';
+            });
+
+            const selectedAnswer = userAnswers[currentSection][currentQuestionIndex];
+            if (selectedAnswer) {
+                const selectedOption = document.querySelector('.option[data-option="' + selectedAnswer + '"]');
+                selectedOption.style.backgroundColor = '#007bff';
+                selectedOption.style.color = 'white';
+            }
+
+            updateProgressBar();
+            updateNavigationButtons();
+        }
+
+        function selectOption(option) {
+            const selectedOption = option.getAttribute('data-option');
+            userAnswers[currentSection][currentQuestionIndex] = selectedOption;
+            option.style.backgroundColor = '#007bff';
+            option.style.color = 'white';
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex + 1) / quizData[currentSection].length) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+
+        function updateNavigationButtons() {
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            document.getElementById('next-btn').disabled = currentQuestionIndex === quizData[currentSection].length - 1;
+            document.getElementById('submit-btn').style.display = currentQuestionIndex === quizData[currentSection].length - 1 ? 'inline-block' : 'none';
+        }
+
+        function showResults() {
+            const score = calculateScore();
+            document.getElementById('quiz-section').style.display = 'none';
+            document.getElementById('result-section').style.display = 'block';
+            document.getElementById('result-message').innerText = 'Thank you, ' + userName + ', for completing the ' + currentSection + ' section! Your score is ' + score.correctAnswers + ' out of ' + score.totalQuestions + '.';
+        }
+
+        function calculateScore() {
+            const questions = quizData[currentSection];
+            let correctAnswers = 0;
+
+            questions.forEach(function(question, index) {
+                if (userAnswers[currentSection][index] === question.answer) {
+                    correctAnswers++;
+                }
+            });
+
+            return {
+                correctAnswers: correctAnswers,
+                totalQuestions: questions.length
+            };
+        }
+    </script>
 </body>
 </html>
