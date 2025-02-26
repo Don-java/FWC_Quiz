@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="quiz-container">
+        <div id="name-input-section">
+            <h1>Welcome to the Quiz!</h1>
+            <input type="text" id="name-input" placeholder="Enter your name">
+            <button id="start-quiz">Start Quiz</button>
+        </div>
+
+        <div id="section-selection" style="display: none;">
+            <h2>Choose a Section</h2>
+            <button id="beginner-btn">Beginner</button>
+            <button id="intermediate-btn">Intermediate</button>
+            <button id="advanced-btn">Advanced</button>
+        </div>
+
+        <div id="quiz-section" style="display: none;">
+            <h2 id="section-title"></h2>
+            <div id="progress-bar">
+                <div id="progress"></div>
+            </div>
+            <div id="question-container">
+                <h3 id="question"></h3>
+                <div id="options">
+                    <button class="option" data-option="a"></button>
+                    <button class="option" data-option="b"></button>
+                    <button class="option" data-option="c"></button>
+                    <button class="option" data-option="d"></button>
+                </div>
+            </div>
+            <div id="navigation">
+                <button id="prev-btn">Previous</button>
+                <button id="next-btn">Next</button>
+                <button id="submit-btn" style="display: none;">Submit</button>
+            </div>
+        </div>
+
+        <div id="result-section" style="display: none;">
+            <h2>Quiz Completed!</h2>
+            <p id="result-message"></p>
+            <button id="choose-another-section">Choose Another Section</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
